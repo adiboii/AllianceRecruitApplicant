@@ -3,7 +3,7 @@ import Container from "@component/components/Container";
 import Navbar from "@component/components/Navbar";
 import Link from "next/link";
 import { useForm } from 'react-hook-form'
-import { useState } from "react";
+import { useState, useEffect } from "react";
 
 const PersonalInfo = () => {
 
@@ -13,6 +13,7 @@ const PersonalInfo = () => {
         formState: { errors, isValid },
         reset
     } = useForm({mode: 'all'});
+
 
     /** Input field component */
     const Input = ({label, required, type, placeholder, noBorder}) => (
@@ -28,6 +29,20 @@ const PersonalInfo = () => {
             {errors[label] && <span className="text-sm text-primary ml-4">Required</span>}
         </div>
     )
+
+        const FileInput = ({label, required, type, placeholder, noBorder}) => (
+            <div>
+                <label className="block text-sm font-medium  mb-2">
+                    {label} {required && <span className="text-primary">*</span>}
+                </label>
+                <input 
+                    {...register(label, { required })} 
+                    className= {noBorder ? "" : `w-[50%] h-10 border px-3 mb-4 rounded-md shadow-sm focus:border-gray-500 ${errors[label] ? 'border-red-400' : 'border-gray-300'}`}
+                    type={type} placeholder={placeholder}
+                />  
+                {errors[label] && <span className="text-sm text-primary ml-4">Required</span>}
+            </div>
+        )
 
     const LegalName = () =>(
         <div>
@@ -125,7 +140,7 @@ const PersonalInfo = () => {
             <Input required label="Formal Photo" type="file" placeholder="Upload a formal photo"/>
             <hr className="my-4 border-b-1 border-gray-400" />
             <h5 className="text-base font-bold first-line:mb-2">Resume</h5>
-            <Input label="Resume" type="file" placeholder="Upload your Resume/CV"/>
+            <Input required label="Resume" type="file" placeholder="Upload your Resume/CV"/>
             {/* <input required type="file" placeholder="Upload your Resume/CV"/>  */}
             <div className="mt-24 max-w-4xl mx-auto">
                 <div className="flex justify-start">
