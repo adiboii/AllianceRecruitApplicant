@@ -5,9 +5,7 @@ import Navbar from "@component/components/Navbar";
 import JobCard from "@component/components/JobCard";
 import { getJobList } from "./utils";
 
-
 const JobsPage = () => {
-
     const [jobList, setJobList] = useState([]);
 
     useEffect(() => {
@@ -33,15 +31,15 @@ const JobsPage = () => {
                     <div className="grid grid-cols-2 ">
                         <div className="w-full mx-auto">
                             {leftJobs.map((job) => (
-                            <div className="mb-4">
-                                <JobCard job={job.jobTitle} location={job.location} />
+                            <div className="mb-4" key={job.id}>
+                                <JobCard id={job.id} job={job.jobTitle} location={job.location} />
                             </div>
                             ))}
                         </div>
                         <div className="w-full mx-auto">
                             {rightJobs.map((job) => (
-                            <div className="mb-4">
-                                <JobCard job={job.jobTitle} location={job.location} />
+                            <div className="mb-4" key={job.id}>
+                                <JobCard id={job.id} job={job.jobTitle} location={job.location} />
                             </div>
                             ))}
                         </div>
