@@ -2,12 +2,14 @@
 import Container from "@component/components/Container";
 import Navbar from "@component/components/Navbar";
 import Link from "next/link";
+import { useState } from "react";
 
 //TODO: add location icon
 
 const JobDetailsPage = () => {
 
     const dummy = 'Dummy Data';
+    const [step, setStep] = useState(0);
 
     const LegalName = () => (
         <div>
@@ -69,6 +71,15 @@ const JobDetailsPage = () => {
             <BasicInformation/>
             <Address/>
             <Contact/>
+
+            <div className="mt-24 max-w-4xl mx-auto">
+                <div className="flex justify-start">
+                <Link href="#" onClick={() => window.history.back()}>
+                    <button className="px-24 py-4 bg-gray-500 hover:bg-gray-600 text-white rounded-md mr-2">Back</button>
+                </Link>
+                <button onClick={setStep(step + 1)} className="px-24 py-4 bg-primary hover:bg-red-700 text-white rounded-md">Next</button>
+                </div>
+            </div>
         </div>
     )
 
@@ -86,22 +97,27 @@ const JobDetailsPage = () => {
             <hr className="my-4 border-b-1 border-gray-400" />
             <h5 className="text-base font-bold mb-2">Resume</h5>
             <p>{dummy}</p>
+            <div className="mt-24 max-w-4xl mx-auto">
+                <div className="flex justify-start">
+                <button className="px-24 py-4 bg-gray-500 hover:bg-gray-600 text-white rounded-md mr-2">Back</button>
+                <button className="px-24 py-4 bg-primary hover:bg-red-700 text-white rounded-md">Finish Review</button>
+                </div>
+            </div>
         </div>
     )
 
-
     const reviewPages = [
-        <PersonalInformation/>
+        <PersonalInformation/>,
         <Attachment/>
     ]
+        
   return (
       <div className="h-fit">
       <Navbar showAboutButton={false}/>
        <Container>
             <div className="max-w-4xl mx-auto">
             <h1 className="text-2xl font-bold mb-4 text-black">Review Application</h1>
-                <PersonalInformation/>
-                <Attachment/>
+                {reviewPages[step]}
             </div>         
       </Container> 
   </div>
