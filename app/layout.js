@@ -1,4 +1,5 @@
 import './globals.css'
+import  ApplicationContextProvider  from './context/data-provider'
 
 export const metadata = {
   title: 'Alliance Recruit',
@@ -8,7 +9,11 @@ export const metadata = {
 export default function RootLayout({ children }) {
   return (
     <html lang="en">
-      <body>{children}</body>
+      <body>
+        <ApplicationContextProvider>
+          {children}
+        </ApplicationContextProvider>
+      </body>
     </html>
   )
 }
