@@ -4,6 +4,7 @@ import Navbar from "@component/components/Navbar";
 import Link from "next/link";
 import { getJobDetails } from "../../utils";
 import { useState, useEffect } from "react";
+import { useApplicationContext } from "@component/app/context/data-provider";
 //TODO: add location icon
 
 const JobDetailsPage = ({params}) => {
@@ -19,6 +20,9 @@ const JobDetailsPage = ({params}) => {
     }
     getJob();
   }, []);
+
+
+  const { jobId, setJobId } = useApplicationContext();
 
   return (
     job && (
@@ -50,7 +54,7 @@ const JobDetailsPage = ({params}) => {
                 <Link href="#" onClick={() => window.history.back()}>
                   <button className="px-24 py-4 bg-gray-500 hover:bg-gray-600 text-white rounded-md mr-2">Back</button>
                 </Link>
-                <Link href="/applicationform">
+                <Link href="/application-form/personal-info" onClick={() => {setJobId(job.Id)}}>
                   <button className="px-24 py-4 bg-primary hover:bg-red-700 text-white rounded-md">Apply</button>
                 </Link>
               </div>
