@@ -25,7 +25,7 @@ const PersonalInfo = () => {
                 {label} {required && <span className="text-primary">*</span>}
             </label>
             <input 
-                {...register(`personalInfo.${name}`, { required })} 
+                {...register(name, { required })} 
                 className= {noBorder ? "" : `w-[50%] h-10 border px-3 mb-4 rounded-md shadow-sm focus:border-gray-500 ${errors[label] ? 'border-red-400' : 'border-gray-300'}`}
                 type={type} placeholder={placeholder} 
             />  
