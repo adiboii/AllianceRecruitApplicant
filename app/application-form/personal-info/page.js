@@ -2,21 +2,77 @@
 import Container from "@component/components/Container";
 import Navbar from "@component/components/Navbar";
 import Link from "next/link";
-import { useForm } from 'react-hook-form'
-import { useState, useEffect } from "react";
+import { useForm, useController } from 'react-hook-form'
+import { useEffect } from "react";
 import { useApplicationContext } from "@component/app/context/data-provider";
 import { useRouter } from 'next/navigation';
+import { yupResolver } from '@hookform/resolvers/yup';
+import * as yup from "yup";
+import Select from 'react-select';
 
 const PersonalInfo = () => {
     const router = useRouter();
+    const { personalInfo, setPersonalInfo  } = useApplicationContext();
+    const schema = yup.object().shape({
+        first_name: yup
+          .string()
+          .matches(/^[A-Za-z ]+$/, 'First name must contain only letters')
+          .required('First name is required'),
+        middle_name: yup
+          .string()
+          .matches(/^[A-Za-z ]+$/, 'Middle name must contain only letters')
+          .required('Middle name is required'),
+        last_name: yup
+          .string()
+          .matches(/^[A-Za-z ]+$/, 'Last name must contain only letters')
+          .required('Last name is required'),
+        sex: yup
+            .string()
+            .required("Sex is required"),
+        date_of_birth: yup
+            .string()
+            .required("Date of Birth is required"),
+        country: yup
+            .string()
+            .matches(/^[A-Za-z ]+$/, 'Country must contain only letters')
+            .required("Country is required"),
+        province: yup
+            .string()
+            .matches(/^[A-Za-z ]+$/, 'Province must contain only letters')
+            .required("Province is required"),
+        city: yup
+            .string()
+            .matches(/^[A-Za-z ]+$/, 'City must contain only letters')
+            .required("City is required"),
+        address_line_1: yup
+            .string()
+            .required("Address Line 1 is required"),
+        address_line_2: yup
+            .string()
+            .optional(),
+        zip_code: yup
+            .number()
+            .typeError("Zip Code must contain only numbers")
+            .required("Zip Code is required"),
+        email_address: yup
+            .string()
+            .email("Email must be a valid email")
+            .required("Email is required"),
+        phone_number: yup
+            .string()
+            .matches(/^[0-9]+$/, "Must be only digits")
+            .min(11, 'Phone Number should be 11 digits')
+            .max(11, 'Phone Number should be 11 digits')
+            .required("Phone Number is required"),
+    });
+
     const { 
         register, 
+        control,
         handleSubmit,
         getValues,
-        formState: { errors, isValid },
-    } = useForm({mode: 'all'});
-
-    const { jobId, personalInfo, setPersonalInfo  } = useApplicationContext();
+        formState: { errors }
+    } = useForm({resolver: yupResolver(schema)});
 
     /** Input field component */
     const Input = ({label, name, required, type, placeholder, noBorder, value}) => (
@@ -25,31 +81,54 @@ const PersonalInfo = () => {
                 {label} {required && <span className="text-primary">*</span>}
             </label>
             <input 
-                {...register(`personalInfo.${name}`, { required })} 
-                className= {noBorder ? "" : `w-[50%] h-10 border px-3 mb-4 rounded-md shadow-sm focus:border-gray-500 ${errors[label] ? 'border-red-400' : 'border-gray-300'}`}
-                type={type} placeholder={placeholder} 
+                {...register(name, { required })} 
+                className= {noBorder ? "" : `w-[50%] h-10 border px-3 mb-4 rounded-md shadow-sm focus:border-gray-500 ${errors[name]?.message ? 'border-red-400' : 'border-gray-300'}`}
+                type={type} 
+                placeholder={placeholder} 
+                defaultValue={value}
             />  
-            {errors[label] && <span className="text-sm text-primary ml-4">Required</span>}
+            {errors[name]?.message ? <span className="text-sm text-primary ml-4">{errors[name]?.message}</span> : null }
         </div>
     )
-
 
     const LegalName = () =>(
         <div>
             <hr className="my-4 border-b-1 border-gray-400" />
             <h5 className="text-base font-bold mb-2">Legal Name</h5>
-            <Input required label="First Name" name="first_name" type="text" placeholder="First Name"/>
-            <Input required label="Middle Name" name="middle_name" type="text" placeholder="Middle Name"/>
-            <Input required label="Last Name" name="last_name" type="text" placeholder="Last Name"/>
+            <Input required label="First Name" name="first_name" type="text" placeholder="First Name" value={personalInfo?.first_name}/>
+            <Input required label="Middle Name" name="middle_name" type="text" placeholder="Middle Name" value={personalInfo?.middle_name}/>
+            <Input required label="Last Name" name="last_name" type="text" placeholder="Last Name" value={personalInfo?.last_name}/>
         </div>
     )
+
+    
+    const sexOptions = [
+        {value: "male", label: "Male"},
+        {value: "female", label: "Female"},
+        {value: "preferNotToSay", label: "Prefer Not To Say"},
+    ]
+
+    const { field } = useController({name: "sex", control})
+
+    const handleSelectChange = (option) => {
+        field.onChange(option.value)
+    };
 
     const BasicInformation = () => (
         <div>
             <hr className="my-4 border-b-1 border-gray-400" />
             <h5 className="text-base font-bold mb-2">Basic Information</h5>
-            <Input required label="Sex" name="sex" type="text" placeholder="Sex"/>
-            <Input required label="Date of Birth" name="date_of_birth" type="date" placeholder="dd/mm/yyyy"/>
+            <label className="block text-sm font-medium">Sex<span className="text-primary">*</span></label>
+            <Select
+                className="w-[50%] h-10 mb-4"
+                {...register('sex')}
+                placeholder="Select Sex"
+                value={sexOptions.find(({value}) => value === field.value)}
+                onChange={handleSelectChange}
+                options={sexOptions}
+                defaultValue={sexOptions.find(({value}) => value === personalInfo?.sex)}
+            />
+            <Input required label="Date of Birth" name="date_of_birth" type="date" placeholder="dd/mm/yyyy" value={personalInfo?.date_of_birth}/>
         </div>
     )
 
@@ -57,12 +136,12 @@ const PersonalInfo = () => {
         <div>
             <hr className="my-4 border-b-1 border-gray-400" />
             <h5 className="text-base font-bold mb-2">Address</h5>
-            <Input required label="Country" name="country" type="text" placeholder="Country"/>
-            <Input required label="Province" name="province" type="text" placeholder="Province"/>
-            <Input required label="City" name="city" type="text" placeholder="City"/>
-            <Input required label="Zip Code" name="zip_code" type="text" placeholder="Zip Code"/>
-            <Input required label="Addess Line 1" name="address_line_1" type="text" placeholder="Address Line 1"/>
-            <Input label="Address Line 2" name="address_line_2" type="text" placeholder="Address Line 2"/>
+            <Input required label="Country" name="country" type="text" placeholder="Country" value={personalInfo?.country}/>
+            <Input required label="Province" name="province" type="text" placeholder="Province" value={personalInfo?.province}/>
+            <Input required label="City" name="city" type="text" placeholder="City" value={personalInfo?.city}/>
+            <Input required label="Zip Code" name="zip_code" type="text" placeholder="Zip Code" value={personalInfo?.zip_code}/>
+            <Input required label="Addess Line 1" name="address_line_1" type="text" placeholder="Address Line 1" value={personalInfo?.address_line_1}/>
+            <Input label="Address Line 2" name="address_line_2" type="text" placeholder="Address Line 2" value={personalInfo?.address_line_2}/>
         </div>
     )
 
@@ -70,20 +149,16 @@ const PersonalInfo = () => {
         <div>
             <hr className="my-4 border-b-1 border-gray-400" />
             <h5 className="text-base font-bold mb-2">Contact</h5>
-            <Input required label="Email Address" name="email_address" type="text" placeholder="Email Address"/>
-            <Input required label="Phone Number" name="phone_number" type="text" placeholder="Phone Number"/>
+            <Input required label="Email Address" name="email_address" type="text" placeholder="Email Address" value={personalInfo?.email_address}/>
+            <Input required label="Phone Number" name="phone_number" type="text" placeholder="Phone Number" value={personalInfo?.phone_number}/>
         </div>
     )
 
     useEffect(() => {
-        // code here will run on mount and when personalInfo changes
-        console.log("Personal Info Use Effect:", personalInfo);
       }, [personalInfo]); 
 
-    const onPersonalInfoSubmit = (personalInfoData) => {
-        console.log("Personal Info Data:", getValues)
+    const onPersonalInfoSubmit = () => {
         setPersonalInfo(getValues());
-        console.log("Personal Info Context:", personalInfo);
         router.push('/application-form/attachment');
     }
 
