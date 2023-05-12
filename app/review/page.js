@@ -8,12 +8,15 @@ import { postPersonalInfo, postAttachment, postApplication } from "./utils";
 import { useRouter } from 'next/navigation';
 import {AdvancedImage} from '@cloudinary/react';
 import {Cloudinary, CloudinaryImage} from "@cloudinary/url-gen";
+import { thumbnail } from "@cloudinary/url-gen/actions/resize";
+import { set } from "react-hook-form";
 
 
 const ReviewPage = () => {
     const router = useRouter();
     const [step, setStep] = useState(0);
     const { jobId, attachment, personalInfo } = useApplicationContext();
+    const [isLoading, setIslLoading] = useState(false);
 
     const cld = new Cloudinary({
         cloud: {
@@ -72,7 +75,7 @@ const ReviewPage = () => {
             <hr className="my-4 border-b-1 border-gray-400" />
             <h5 className="text-base font-bold mb-2">Contact</h5>
             <label className="block text-sm font-medium">Email</label>
-            <p>{personalInfo.email_address}</p>
+            <p className="mb-4">{personalInfo.email_address}</p>
             <label className="block text-sm font-medium">Phone Number</label>
             <p>{personalInfo.phone_number}</p>
         </div>
@@ -97,7 +100,7 @@ const ReviewPage = () => {
             <p>{attachment?.get('portfolio_url')}</p>
             <hr className="my-4 border-b-1 border-gray-400" />
             <h5 className="text-base font-bold mb-2">Formal Picutre</h5>
-            <AdvancedImage cldImg={formalPhoto}/>
+            <AdvancedImage cldImg={formalPhoto.resize(thumbnail().width(250).height(250))} className="mx-auto"/>
             <hr className="my-4 border-b-1 border-gray-400" />
             <h5 className="text-base font-bold mb-2">Resume</h5>
             <AdvancedImage cldImg={resume}/>
@@ -105,6 +108,7 @@ const ReviewPage = () => {
     )
 
     const handleOnClick = async () => {
+        setIslLoading(true); 
         const personalInfoId = await postPersonalInfo(JSON.stringify(personalInfo));    
         
         const attachmentId = await postAttachment({
@@ -121,7 +125,7 @@ const ReviewPage = () => {
             "status": "Pre-screened",
             "dateTimeApplied": new Date(),
         })
-
+        setIslLoading(false);
         router.push("/finish");
     }
 
@@ -129,47 +133,64 @@ const ReviewPage = () => {
         <PersonalInformation/>,
         <Attachment/>
     ]
-
     const Navigation = () => {
         if(step == 0){
             return(
-            <div className="flex justify-between mb-4 mt-10">
-                <div className="flex justify-start">
-                    <Link href="#" onClick={() => window.history.back()}>
-                        <button className="px-24 py-4 bg-gray-500 hover:bg-gray-600 text-white rounded-md mr-2">
-                            Back
-                        </button>
-                    </Link>
-                    <button onClick={() => setStep(step + 1)} className="px-24 py-4 bg-primary hover:bg-red-700 text-white rounded-md">
-                        Next
-                    </button>
-                </div>
-            </div>
+            <ul className="flex bg-gray-100 px-1 py-2 w-fit mx-auto rounded-md mb-12">
+                <li className="flex-1 mx-2">
+                    <a className="w-72 text-center block rounded-md py-4 px-4 bg-white hover:bg-gray-50 text-red-600 font-semibold cursor-pointer">Information</a>
+                </li>
+                <li className="flex-1 mx-2">
+                    <a className="w-72 text-center block rounded-md hover:border-gray-200 text-black font-semibold hover:bg-gray-200 py-4 px-4 cursor-pointer" onClick={()=>{setStep(1)}}>Attachments</a>
+                </li>
+            </ul>
             )
         }else{
             return(
-            <div className="flex justify-between mb-4 mt-10">
-                <div className="flex justify-start">
-                    <button onClick={() => {setStep(step - 1)}} className="px-24 py-4 bg-gray-500 hover:bg-gray-600 text-white rounded-md mr-2">
-                        Back
-                    </button>
-                    <button type="submit" onClick={handleOnClick} className="px-24 py-4 bg-primary hover:bg-red-700 text-white rounded-md">
-                        Submit
-                    </button>
-                </div>
-            </div>
+            <ul className="flex bg-gray-100 px-1 py-2 w-fit mx-auto rounded-md mb-12">
+                <li className="flex-1 mx-2">
+                    <a className="w-72 text-center block rounded-md hover:border-gray-200 text-black font-semibold hover:bg-gray-200 py-4 px-4 cursor-pointer" onClick={()=>{setStep(0)}}>Information</a>
+                </li>
+                <li className="flex-1 mx-2">
+                    <a className="w-72 text-center block rounded-md py-4 px-4 bg-white hover:bg-gray-50 text-red-600 font-semibold cursor-pointer">Attachments</a>
+                </li>
+            </ul>
             )
         }
     }
-        
+
+    const Buttons = () => {
+        return(
+        <div className="flex justify-between mb-4 mt-10">
+            <div className="flex justify-start">
+                <Link href="#" onClick={() => window.history.back()}>
+                    <button className="px-24 py-4 bg-gray-500 hover:bg-gray-600 text-white rounded-md mr-2">
+                        Back
+                    </button>
+                </Link>
+                <button type="submit" onClick={handleOnClick} className="px-24 py-4 bg-primary hover:bg-red-700 text-white rounded-md">
+                    Submit
+                </button>
+            </div>
+        </div>
+        )
+    }
+
   return (
     <div className="h-fit">
       <Navbar showAboutButton={false}/>
        <Container>
             <div className="max-w-4xl mx-auto">
                 <h1 className="text-2xl font-bold mb-4 text-black">Review Application</h1>
-                {reviewPages[step]}
-                <Navigation/>
+                { isLoading ? 
+                    <Loading/> 
+                    :
+                    <div>
+                        <Navigation/>
+                        {reviewPages[step]}
+                        <Buttons/>
+                    </div>
+                }
             </div>         
       </Container> 
     </div>

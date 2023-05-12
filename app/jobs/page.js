@@ -4,14 +4,18 @@ import Container from "@component/components/Container";
 import Navbar from "@component/components/Navbar";
 import JobCard from "@component/components/JobCard";
 import { getJobList } from "./utils";
+import Loading from "@component/components/Loading";
 
 const JobsPage = () => {
     const [jobList, setJobList] = useState([]);
+    const [isLoading, setIsLoading] = useState(false);
 
     useEffect(() => {
       async function fetchData() {
+        setIsLoading(true);
         const formattedJobList = await getJobList();
         setJobList(formattedJobList);
+        setIsLoading(false);
       }
       fetchData();
     }, []);
@@ -25,7 +29,9 @@ const JobsPage = () => {
         <div className="h-fit">
             <Navbar showAboutButton={false}/>
             <Container>
-                <div className="max-w-5xl mx-auto">
+                {
+                    isLoading ? <Loading/> :
+                    <div className="max-w-5xl mx-auto">
                     <h2 className="text-2xl font-medium text-black ml-12">Select your Preferred Job</h2>
                     <hr className="my-4 mx-12 border-gray-300"/>
                     <div className="grid grid-cols-2 ">
@@ -45,6 +51,7 @@ const JobsPage = () => {
                         </div>
                     </div>
                 </div>  
+                }
             </Container>
         </div>
     );

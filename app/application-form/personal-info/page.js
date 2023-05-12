@@ -103,8 +103,8 @@ const PersonalInfo = () => {
 
     
     const sexOptions = [
-        {value: "male", label: "Male"},
-        {value: "female", label: "Female"},
+        {value: "Male", label: "Male"},
+        {value: "Female", label: "Female"},
         {value: "preferNotToSay", label: "Prefer Not To Say"},
     ]
 

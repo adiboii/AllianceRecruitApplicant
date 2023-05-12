@@ -9,11 +9,13 @@ import { useRouter } from 'next/navigation';
 import axios from "axios";
 import { yupResolver } from '@hookform/resolvers/yup';
 import * as yup from "yup";
+import Loading from "@component/components/Loading";
 
 const Attachment = () => {
     const router = useRouter();
     const formData = new FormData();
     const { attachment, setAttachment } = useApplicationContext();
+    const [isLoading, setIsLoading] = useState(false);
 
     const imageFormats = ['image/jpg', 'image/jpeg', 'image/png'];
     const pdfFormats = ['application/pdf'];
@@ -80,8 +82,8 @@ const Attachment = () => {
     }
 
     const onAttachmentSubmit = async (data) => {
-        
-        const photoForm = new FormData();
+        setIsLoading(true);
+        const photoForm = new FormData();   
         const fileForm = new FormData();
         photoForm.append("file", photo);
         photoForm.append("upload_preset", "alliance");
@@ -111,6 +113,7 @@ const Attachment = () => {
         formData.append("formal_photo", formalPhoto);
         formData.append("resume", resume);
         setAttachment(formData);
+        setIsLoading(false);
         router.push("/review");
     };
 
@@ -118,7 +121,11 @@ const Attachment = () => {
         <div className="h-fit">
         <Navbar showAboutButton={false}/>
         <Container>
-            <div className="max-w-4xl mx-auto">
+            {
+                isLoading ? 
+                <Loading/>
+                :
+                <div className="max-w-4xl mx-auto">
                 <form onSubmit={handleSubmit(onAttachmentSubmit)}>
                     <h1 className="text-2xl font-bold mb-4 text-black">Attachment</h1>
                         <p className="text-sm mb-2 text-black"> <span className="text-primary">*</span> 
@@ -154,6 +161,7 @@ const Attachment = () => {
                     </div>
                 </form>
             </div>
+            }           
         </Container>
         </div>
     );

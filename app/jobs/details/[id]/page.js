@@ -5,7 +5,7 @@ import Link from "next/link";
 import { getJobDetails } from "../../utils";
 import { useState, useEffect } from "react";
 import { useApplicationContext } from "@component/app/context/data-provider";
-//TODO: add location icon
+import PlaceOutlinedIcon from '@mui/icons-material/PlaceOutlined';
 
 const JobDetailsPage = ({params}) => {
   
@@ -29,9 +29,13 @@ const JobDetailsPage = ({params}) => {
       <div className="h-fit">
       <Navbar showAboutButton={false}/>
        <Container>
-            <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="flex flex-col">
+          <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
               <h1 className="text-3xl font-bold mb-4 text-black">{job.JobTitle}</h1>
-              <h4 className="text-lg font-medium mb-2 text-black">{job.Location}</h4>
+              <div className="flex">
+                <PlaceOutlinedIcon className="text-primary"/>
+                <h4 className="text-lg font-medium mb-2 text-black">{job.Location}</h4>
+              </div>
               <h5 className="text-xl font-bold mt-6 mb- text-primary uppercase">Our {job.JobTitle} should: </h5>
               <ul className="list-none list-outside">
                 {job?.JobDescriptions?.map((desc) => (
@@ -50,7 +54,9 @@ const JobDetailsPage = ({params}) => {
                   </li>
                   ))}
               </ul>
-              <div className="absolute bottom-24 mb-4 mr-4">
+              
+            </div>
+            <div className="mt-12 ml-32 mb-4 mr-4">
                 <Link href="#" onClick={() => window.history.back()}>
                   <button className="px-24 py-4 bg-gray-500 hover:bg-gray-600 text-white rounded-md mr-2">Back</button>
                 </Link>
@@ -58,7 +64,8 @@ const JobDetailsPage = ({params}) => {
                   <button className="px-24 py-4 bg-primary hover:bg-red-700 text-white rounded-md">Apply</button>
                 </Link>
               </div>
-            </div>
+          </div>
+          
       </Container> 
   </div>
     )

@@ -8,7 +8,8 @@ export default function Navbar({ showAboutButton = true }) {
       </div>
       {showAboutButton && (
         <div className="flex">
-          <a className="inline-block text-sm px-6 py-4 leading-none border rounded text-primary border-primary hover:text-white hover:bg-primary mt-4 lg:mt-0">
+          <a href="https://www.alliance.com.ph/index.html"
+            className="inline-block text-sm px-6 py-4 leading-none border rounded text-primary border-primary hover:text-white hover:bg-primary mt-4 lg:mt-0">
             About Us
           </a>
         </div>
